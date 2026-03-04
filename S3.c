@@ -73,13 +73,12 @@ Masina* citireVectorMasiniFisier(const char* numeFisier, int* nrMasiniCitite) {
 	}
 	else {
 		Masina* vectorMasini = NULL;
-		nrMasiniCitite = 0;
-		while (!feof(file)) {
+				while (!feof(file)) {
 			
 			Masina masina = citireMasinaFisier(file);
 			adaugaMasinaInVector(&vectorMasini,nrMasiniCitite,masina);
-			return vectorMasini;
 		}
+				return vectorMasini;
 	}
 }
 
@@ -93,7 +92,6 @@ int main() {
 
 	Masina* masini=citireVectorMasiniFisier("masini.txt",&nrMasini);
 	afisareVectorMasini(masini,nrMasini);
-
 	
 	return 0;
 }
