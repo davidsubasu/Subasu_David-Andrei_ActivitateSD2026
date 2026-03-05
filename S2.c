@@ -14,7 +14,7 @@ struct StructuraMasina {
 typedef struct StructuraMasina Masina;
 
 void afisareMasina(Masina masina) {
-	printf("ID: %d\nNumar usi: %d\nPret: %f\nModel: %-10s\nNume sofer: %-10s\nSerie: %c\n\n", masina.id,masina.nrUsi, masina.pret, masina.model, masina.numeSofer,masina.serie);
+	printf("ID: %d\nNumar usi: %d\nPret: %9.2f\nModel: %-10s\nNume sofer: %-10s\nSerie: %c\n\n", masina.id,masina.nrUsi, masina.pret, masina.model, masina.numeSofer,masina.serie);
 
 }
 
@@ -108,3 +108,4 @@ int main() {
 	
 	return 0;
 }
+
