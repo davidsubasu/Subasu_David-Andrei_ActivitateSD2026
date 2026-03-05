@@ -1,117 +1,110 @@
-#include<stdio.h>
-#include<malloc.h>
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-//ocupa spatiu de memorie contigua
-
-struct Telefon {
+struct StructuraMasina {
 	int id;
-	int RAM;
-	char* producator;
+	int nrUsi;
 	float pret;
-	char serie;
+	char* model;
+	char* numeSofer;
+	unsigned char serie;
 };
-struct Telefon initializare(int id, int RAM, char* producator, float pret, char serie) {
-	struct Telefon t;
-	t.id = id;
-	t.RAM = RAM;
-	t.producator = (char*)malloc((strlen(producator) + 1) * sizeof(char));
-	strcpy(t.producator, producator);
-	t.pret = pret;
-	t.serie = serie;
-	return t;
+typedef struct StructuraMasina Masina;
+
+void afisareMasina(Masina masina) {
+	printf("ID: %d\nNumar usi: %d\nPret: %f\nModel: %-10s\nNume sofer: %-10s\nSerie: %c\n\n", masina.id,masina.nrUsi, masina.pret, masina.model, masina.numeSofer,masina.serie);
+
 }
 
-struct Telefon copiazaTelefon(struct Telefon t) {
-	struct Telefon telefon = initializare(t.id, t.RAM, t.producator, t.pret, t.serie);
-	return telefon;
-}
-
-void afisare(struct Telefon t) {
-	printf("Id: %d\nRAM: %d\nProducator: %s\nPret: %5.2f\nSerie: %c\n", t.id, t.RAM, t.producator, t.pret, t.serie);
-}
-
-void afisareVector(struct Telefon* vector, int nrElemente) {
-	for (int i = 0; i < nrElemente; i++) {
-		afisare(vector[i]);
-		printf("\n");
+void afisareVectorMasini(Masina* masini, int nrMasini) {
+	if (masini == NULL || nrMasini == 0) {
+		printf("Vectorul de masini este gol");
+		return;
+	}
+	for (int i = 0; i < nrMasini; i++) {
+		afisareMasina(masini[i]);
 	}
 }
 
-struct Telefon* copiazaPrimeleNElemente(struct Telefon* vector, int nrElemente, int nrElementeCopiate) {
-	if (nrElementeCopiate > nrElemente) 
-		nrElementeCopiate = nrElemente;
+void adaugaMasinaInVector(Masina** masini, int * nrMasini, Masina masinaNoua) {
+	//if (nrMasini == NULL) return;
+	Masina* temp=(Masina*)malloc(sizeof(Masina)*((*nrMasini) + 1));
+	for (int i = 0; i < *nrMasini; i++) {
+		temp[i] = (*masini)[i];
+	}
+	temp[*nrMasini]=masinaNoua;
+	free(*masini);
+	*masini = temp;
+	(*nrMasini)++;
+}
 
-		struct Telefon* vectorNou = (struct Telefon*)malloc(sizeof(struct Telefon) * nrElementeCopiate);
-		for (int i = 0;i < nrElementeCopiate;i++) {
-			vectorNou[i] = copiazaTelefon(vector[i]);
+Masina citireMasinaFisier(FILE* file) {
+	char linie[256];
+	fgets(linie,255,file);
+	char delimitator[3] = ",\n";
+	Masina masina;
+	masina.id = atoi(strtok(linie,delimitator));
+	masina.nrUsi = atoi(strtok(NULL, delimitator));
+	masina.pret = atof(strtok(NULL, delimitator));
+	char* aux = (strtok(NULL, delimitator));
+	masina.model = (char*)malloc((strlen(aux) +1)* sizeof(char));
+	strcpy(masina.model,aux);
+	aux = (strtok(NULL, delimitator));
+	masina.numeSofer = (char*)malloc((strlen(aux) + 1) * sizeof(char));
+	strcpy(masina.numeSofer, aux);
+	masina.serie =  strtok(NULL, delimitator)[0];
+	return masina;
+}
+
+Masina* citireVectorMasiniFisier(const char* numeFisier, int* nrMasiniCitite) {
+	FILE* file = fopen(numeFisier, "r");
+	if (!file) {
+		printf("Eroare la deschidere\n");
+		return;
+	}
+	else {
+		Masina* vectorMasini = NULL;
+				while (!feof(file)) {
+			
+			Masina masina = citireMasinaFisier(file);
+			adaugaMasinaInVector(&vectorMasini,nrMasiniCitite,masina);
 		}
-		return vectorNou;
-
-}
-
-void dezalocare(struct Telefon** vector, int* nrElemente) {
-	for (int i = 0; i < *nrElemente;i++) {
-		free((*vector)[i].producator); //(*vector) pt a ajunge la continutul vectorului
-		(*vector)[i].producator = NULL;
+				return vectorMasini;
 	}
-	free(*vector);
-	*vector = NULL;
-	*nrElemente = 0;
 }
 
-void copiazaTelefoaneScumpe(struct Telefon* vector, char nrElemente, float pret_min, struct Telefon** vectorNou, int* dimensiune) {
-	//parametrul prag poate fi modificat in functie de 
-	// tipul atributului ales pentru a indeplini o conditie
-	//este creat un nou vector cu elementele care indeplinesc acea conditie
-	*dimensiune = 0;
-	for (int i = 0; i < nrElemente; i++) {
-		if (vector[i].pret >= pret_min) {
-			(*dimensiune)++;
+void dezalocareVectorMasini(Masina** vector, int* nrMasini) {
+	if (vector != NULL && *vector != NULL) {
+		for (int i = 0;i < *nrMasini;i++) {
+			if ((*vector)[i].model != NULL) {
+				free((*vector)[i].model);
+				(*vector)[i].model = NULL;
+			}
+			if ((*vector)[i].numeSofer != NULL){
+				free((*vector)[i].numeSofer);
+				(*vector)[i].numeSofer = NULL;
+			}
 		}
+		free(*vector);
+		*vector = NULL;
+		*nrMasini = 0;
 	}
-	*vectorNou = malloc((*dimensiune) * sizeof(struct Telefon));
-	for (int i = 0, j = 0; i < nrElemente; i++) {
-		if (vector[i].pret >= pret_min) {
-			(*vectorNou)[j] = copiazaTelefon(vector[i]);
-			j += 1;
-		}
-	}
+
 }
-
-struct Telefon getPrimulElementConditionat(struct Telefon* vector, int nrElemente, const char* conditie) {
-	//trebuie cautat elementul care indeplineste o conditie
-	//dupa atributul de tip char*. Acesta este returnat.
-	struct Telefon t;
-	t.id = 1;
-
-	return t;
-}
-	
-
 
 int main() {
-	struct Telefon t;
-	t.id = 1;
-	t = initializare(3,124,"Xiaomi", 10, 'O');
-	afisare(t);
-	int nrTelefoane = 3;
-	int nrTelefoaneCopiate = 2;
-	struct Telefon* telefoane=(struct Telefon*)malloc(sizeof(struct Telefon) * nrTelefoane); //fara +1 deoarece este vector de elemente, nu caractere (pt \0)
-	telefoane[0] = initializare(1, 8, "Samsung", 3000.5, 'A');
-	telefoane[1] = initializare(2, 16, "iPhone", 5000.5, 'S');
-	telefoane[2] = t;
-	afisareVector(telefoane, nrTelefoane);
-	struct Telefon* telefoaneCopiate = copiazaPrimeleNElemente(telefoane, nrTelefoane, nrTelefoaneCopiate);
-	printf("\nTelefoane copiate: \n");
-	afisareVector(telefoaneCopiate, nrTelefoaneCopiate);
-	dezalocare(&telefoaneCopiate,&nrTelefoaneCopiate);
-	printf("\nTelefoane copiate dupa dezalocare: \n");
-	afisareVector(telefoaneCopiate, nrTelefoaneCopiate);
-	struct Telefon *vectorNou;
-	int dimensiune;
-	float pret_minim=1000.00;
-	copiazaTelefoaneScumpe(telefoane, nrTelefoane, pret_minim,&vectorNou,&dimensiune);
-	printf("\nTelefoane scumpe: \n");
-	afisareVector(vectorNou,dimensiune);
+	int nrMasini = 0;
+
+	Masina* masini=citireVectorMasiniFisier("masini.txt",&nrMasini);
+	afisareVectorMasini(masini,nrMasini);
+
+	printf("Dezalocare:\n\n");
+	dezalocareVectorMasini(&masini,&nrMasini);
+	//Masina* masini = citireVectorMasiniFisier("masini.txt", &nrMasini);
+	//afisareVectorMasini(masini,nrMasini);
+	printf("Masini dupa dezalocare");
+	
 	return 0;
 }
