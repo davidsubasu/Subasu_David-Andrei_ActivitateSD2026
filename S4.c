@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-//trebuie sa folositi fisierul masini.txt
-//sau va creati un alt fisier cu alte date
-
 struct StructuraMasina {
 	int id;
 	int nrUsi;
@@ -16,7 +13,6 @@ struct StructuraMasina {
 };
 typedef struct StructuraMasina Masina;
 
-//creare structura pentru un nod dintr-o lista simplu inlantuita
 struct Nod {
 	Masina info;
 	struct Nod* next;
@@ -55,8 +51,6 @@ void afisareMasina(Masina masina) {
 }
 
 void afisareListaMasini(Nod* cap) {
-	//afiseaza toate elemente de tip masina din lista simplu inlantuita
-	//prin apelarea functiei afisareMasina()
 	while (cap) {
 		afisareMasina(cap->info);
 		cap = cap->next;
@@ -64,7 +58,6 @@ void afisareListaMasini(Nod* cap) {
 }
 
 void adaugaMasinaInLista(Nod** cap, Masina masinaNoua) {
-	//adauga la final in lista primita o noua masina pe care o primim ca parametru
 	Nod* temp = malloc(sizeof(Nod));
 	temp->info = masinaNoua;
 	temp->next = NULL;
@@ -85,9 +78,6 @@ void adaugaLaInceputInLista(/*lista de masini*/ Masina masinaNoua) {
 }
 
 void* citireListaMasiniDinFisier(const char* numeFisier) {
-	//functia primeste numele fisierului, il deschide si citeste toate masinile din fisier
-	//prin apelul repetat al functiei citireMasinaDinFisier()
-	//ATENTIE - la final inchidem fisierul/stream-ul
 	FILE* file = fopen(numeFisier, "r");
 	Nod* cap = NULL;
 	while (!feof(file)) {
