@@ -133,7 +133,9 @@ Masina dequeue(ListaDubla* coada) {
 	if (coada->first) {
 		rezultat = coada->first->info;
 		NodDublu* temp = coada->first;
-		coada->first = temp->next;
+		if (coada->first != NULL) {
+			coada->first->prev = NULL;}
+		else { coada->last = NULL};
 		free(temp);
 	}
 	return rezultat;
