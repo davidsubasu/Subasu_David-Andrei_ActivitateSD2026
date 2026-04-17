@@ -90,7 +90,6 @@ void adaugaMasinaInLista(Nod** lista, Masina masinaNoua) {
 
 HashTable initializareHashTable(int dimensiune) {
 	HashTable ht;
-	//initializeaza vectorul de liste si seteaza fiecare lista ca fiind NULL;
 	ht.dim = dimensiune;
 	ht.vector = malloc(ht.dim*sizeof(Nod*));
 	for (int i = 0; i < ht.dim;i++) {
