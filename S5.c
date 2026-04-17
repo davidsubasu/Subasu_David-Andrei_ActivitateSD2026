@@ -157,7 +157,7 @@ void stergeMasinaDupaID(/*lista masini*/ int id) {
 
 char* getNumeSoferMasinaScumpa(/*lista dublu inlantuita*/) {
 	//cauta masina cea mai scumpa si 
-	//returneaza numele soferului acestei maasini.
+	//returneaza numele soferului acestei maasini
 	return NULL;
 }
 
