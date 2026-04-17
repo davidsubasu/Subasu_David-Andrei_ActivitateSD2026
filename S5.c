@@ -121,7 +121,7 @@ ListaDubla citireLDMasiniDinFisier(const char* numeFisier) {
 void dezalocareLDMasini(ListaDubla* listaMasini) {
 	Nod* aux;
 	if (listaMasini->first) { //daca lista nu este null
-		if (listaMasini->first->next) {//daca lista are nimic 2 noduri
+		if (listaMasini->first->next) {//daca lista are minim 2 noduri
 			aux = listaMasini->first->next;
 			while (aux) {
 				free((aux->prev->info).model);
