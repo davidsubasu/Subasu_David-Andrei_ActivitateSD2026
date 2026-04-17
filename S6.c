@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-//trebuie sa folositi fisierul masini.txt
-//sau va creati un alt fisier cu alte date
-
 struct StructuraMasina {
 	int id;
 	int nrUsi;
@@ -16,20 +13,16 @@ struct StructuraMasina {
 };
 typedef struct StructuraMasina Masina;
 
-//creare structura pentru un nod dintr-o lista simplu inlantuita
 typedef struct Nod Nod;
 struct Nod {
 	Masina info;
 	Nod* next; 
 };
 
-//creare structura pentru tabela de dispersie
-// aceasta este un vector de liste
 struct HashTable {
 	int dim;
 	Nod** vector;
 };
-
 typedef struct HashTable HashTable;
 
 Masina citireMasinaDinFisier(FILE* file) {
@@ -104,12 +97,10 @@ int calculeazaHash(int id, int dimensiune) {
 
 void inserareMasinaInTabela(HashTable hash, Masina masina) {
 	int hashCode = calculeazaHash(masina.id,hash.dim);
-	if (!hash.vector[hashCode]) {
-		//nu avem coliziune
+	if (!hash.vector[hashCode]) {//nu avem coliziune
 		adaugaMasinaInLista(&hash.vector[hashCode],masina);
 	}
-	else {
-		//avem coliziune
+	else {//avem coliziune
 		adaugaMasinaInLista(&hash.vector[hashCode], masina);
 	}
 }
