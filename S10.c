@@ -89,12 +89,25 @@ void* citireStackMasiniDinFisier(const char* numeFisier) {
 	return cap;
 }
 
-void dezalocareStivaDeMasini(/*stiva*/) {
-	//sunt dezalocate toate masinile si stiva de elemente
+void dezalocareStivaDeMasini(Nod** cap) {
+	while (*cap) {
+		free((*cap)->masina.model);
+		free((*cap)->masina.numeSofer);
+		Nod* temp = (*cap)->next;
+		free(*cap);
+		*cap = temp;
+	}
+	
 }
 
-int size(/*stiva*/) {
-	//returneaza numarul de elemente din stiva
+int size(Nod* cap) {
+	int ct = 0;
+	Nod* curent = cap;
+	while (curent) {
+		ct++;
+		curent = curent->next;
+	}
+	return ct;
 }
 
 typedef struct NodDublu NodDublu;
