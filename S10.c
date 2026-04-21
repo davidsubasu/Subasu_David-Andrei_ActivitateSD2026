@@ -164,8 +164,19 @@ ListaDubla citireCoadaDeMasiniDinFisier(const char* numeFisier) {
 	return coada;
 }
 
-void dezalocareCoadaDeMasini(/*coada*/) {
-	//sunt dezalocate toate masinile si coada de elemente
+void dezalocareCoadaDeMasini(ListaDubla* coada) {
+	if (coada == NULL) return;
+	NodDublu* curent = coada->first;
+
+	while (curent) {
+		free(curent->info.model);
+		free(curent->info.numeSofer);
+		NodDublu* temp = curent->next;
+		free(curent);
+		curent = temp;
+	}
+	coada->first = NULL;
+	coada->last = NULL;
 }
 
 Masina getMasinaByID(Nod** stiva, int id) { //cu extragere
