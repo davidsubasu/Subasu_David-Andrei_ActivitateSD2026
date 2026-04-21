@@ -90,11 +90,12 @@ Heap citireHeapDeMasiniDinFisier(const char* numeFisier) {
 	for (int i = (heap.nrev - 2) / 2;i >= 0; i--) {
 		filtreazaHeap(heap,i);
 	}
+	heap.lungime = heap.nrev;
 	return heap;
 }
 
 void afisareHeap(Heap heap) {
-	for (int i = heap.nrev; i < heap.lungime;i++) {
+	for (int i = 0; i < heap.nrev;i++) {
 		afisareMasina(heap.vector[i]);
 	}
 }
@@ -125,7 +126,7 @@ void dezalocareHeap(Heap* heap) {
 		free(heap->vector[i].model);
 	}
 	free(heap->vector);
-	heap->vector == NULL;
+	heap->vector = NULL;
 	heap->nrev = 0;
 	heap->lungime = 0;
 }
