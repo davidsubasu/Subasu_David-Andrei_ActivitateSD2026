@@ -204,7 +204,16 @@ Masina getMasinaByID(Nod** stiva, int id) { //cu extragere
 
 }
 
-float calculeazaPretTotal(/*stiva sau coada de masini*/);
+float calculeazaPretTotalCoada(ListaDubla coada) {
+	if (coada.first == NULL) return;
+	float suma = 0.0f;
+	NodDublu* curent = coada.first;
+	while (curent) {
+		suma += curent->info.pret;
+		curent = curent->next;
+	}
+	return suma;
+}
 
 int main() {
 	Nod* stiva = citireStackMasiniDinFisier("masini.txt");
