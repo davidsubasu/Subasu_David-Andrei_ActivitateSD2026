@@ -16,7 +16,7 @@ typedef struct StructuraMasina Masina;
 typedef struct Nod Nod;
 struct Nod {
 	Masina info;
-	Nod* next; 
+	Nod* next;
 };
 
 struct HashTable {
@@ -77,14 +77,14 @@ void adaugaMasinaInLista(Nod** lista, Masina masinaNoua) {
 		}
 		temp->next = nodNou;
 	}
-	else {*lista = nodNou;}
+	else { *lista = nodNou; }
 }
 
 
 HashTable initializareHashTable(int dimensiune) {
 	HashTable ht;
 	ht.dim = dimensiune;
-	ht.vector = malloc(ht.dim*sizeof(Nod*));
+	ht.vector = malloc(ht.dim * sizeof(Nod*));
 	for (int i = 0; i < ht.dim;i++) {
 		ht.vector[i] = NULL;
 	}
@@ -92,13 +92,13 @@ HashTable initializareHashTable(int dimensiune) {
 }
 
 int calculeazaHash(int id, int dimensiune) {
-	return (id*3) % dimensiune;
+	return (id * 3) % dimensiune;
 }
 
 void inserareMasinaInTabela(HashTable hash, Masina masina) {
-	int hashCode = calculeazaHash(masina.id,hash.dim);
+	int hashCode = calculeazaHash(masina.id, hash.dim);
 	if (!hash.vector[hashCode]) {//nu avem coliziune
-		adaugaMasinaInLista(&hash.vector[hashCode],masina);
+		adaugaMasinaInLista(&hash.vector[hashCode], masina);
 	}
 	else {//avem coliziune
 		adaugaMasinaInLista(&hash.vector[hashCode], masina);
@@ -111,7 +111,7 @@ HashTable citireMasiniDinFisier(const char* numeFisier) {
 	if (file) {
 		while (!feof(file)) {
 			Masina masinaCitire = citireMasinaDinFisier(file);
-			inserareMasinaInTabela(hash,masinaCitire);
+			inserareMasinaInTabela(hash, masinaCitire);
 		}
 	}
 	fclose(file);
@@ -120,34 +120,70 @@ HashTable citireMasiniDinFisier(const char* numeFisier) {
 
 void afisareTabelaDeMasini(HashTable ht) {
 	for (int i = 0;i < ht.dim;i++) {
-		printf("Cluster %d:\n",i+1);
+		printf("Cluster %d:\n", i + 1);
 		afisareListaMasini(ht.vector[i]);
 		printf("\n");
 	}
 }
 
-void dezalocareTabelaDeMasini(HashTable *ht) {
-	//sunt dezalocate toate masinile din tabela de dispersie
+void dezalocareTabelaDeMasini(HashTable* ht) {
+	if(!ht || !ht->vector) return;
+	for (int i = 0;i < ht->dim;i++) {
+		Nod* curent = ht->vector[i];
+		while (curent) {
+			free(curent->info.model);
+			free(curent->info.numeSofer);
+			Nod* temp = curent->next;
+			free(curent);
+			curent = temp;
+		}
+		ht->vector[i] = NULL;
+	}
+	free(ht->vector);
+	ht->vector = NULL;
+	ht->dim = 0;
 }
 
 float* calculeazaPreturiMediiPerClustere(HashTable ht, int* nrClustere) {
-	//calculeaza pretul mediu al masinilor din fiecare cluster.
-	//trebuie sa returnam un vector cu valorile medii per cluster.
-	//lungimea vectorului este data de numarul de clustere care contin masini
-	return NULL;
+	int clustereActive = 0;
+	for (int i = 0; i < ht.dim; i++) {
+		if(ht.vector[i]) clustereActive++;
+	}
+	*nrClustere = clustereActive;
+	if (clustereActive == 0)
+		return NULL;
+	float* preturiMedii = (float*)malloc(sizeof(float) * clustereActive );
+	int indexVector = 0;
+
+	for (int i = 0; i < ht.dim;i++) {
+		if (ht.vector[i]) {
+			Nod* curent = ht.vector[i];
+			float sumaPreturi = 0;
+			int nrMasiniInCluster = 0;
+			while (curent) {
+				sumaPreturi += curent->info.pret;
+				nrMasiniInCluster++;
+				curent = curent->next;
+			}
+			preturiMedii[indexVector] = sumaPreturi / nrMasiniInCluster;
+			indexVector++;
+		}
+	}
+
+	return preturiMedii;
 }
 
 Masina getMasinaDupaCheie(HashTable ht, int id) {
 	Masina m;
-	int hashCode = calculeazaHash(id,ht.dim);
+	int hashCode = calculeazaHash(id, ht.dim);
 	Nod* cautare = ht.vector[hashCode];
 	while (cautare) {
 		if (cautare->info.id == id) {
-			m=cautare->info;
+			m = cautare->info;
 			m.numeSofer = (char*)malloc((strlen(cautare->info.numeSofer) + 1) * sizeof(char));
-			strcpy(m.numeSofer,cautare->info.numeSofer);
+			strcpy(m.numeSofer, cautare->info.numeSofer);
 			m.model = (char*)malloc((strlen(cautare->info.model) + 1) * sizeof(char));
-			strcpy(m.model,cautare->info.model);
+			strcpy(m.model, cautare->info.model);
 			return m;
 		}
 		cautare = cautare->next;
@@ -156,11 +192,16 @@ Masina getMasinaDupaCheie(HashTable ht, int id) {
 }
 
 int main() {
-
 	HashTable hash = citireMasiniDinFisier("masini.txt");
 	afisareTabelaDeMasini(hash);
 	Masina test = getMasinaDupaCheie(hash, 9);
 	afisareMasina(test);
-
+	int nrClustere;
+	float* medie = calculeazaPreturiMediiPerClustere(hash, &nrClustere);
+	if (medie) {
+		for (int i = 0; i < nrClustere; i++)
+			printf("Clusterul %d: %.2f\n", i + 1, medie[i]);
+		free(medie);
+	}
 	return 0;
 }
