@@ -85,12 +85,12 @@ void* citireArboreDeMasiniDinFisier(const char* numeFisier) {
 	return root;
 }
 
-void afisareMasiniDinArbore(Nod* root) {
+void afisarePreordine(Nod* root) {
 	//TREI moduri de parcurgere RSD SRD SDR
 	if (root) {
 		afisareMasina(root->info);
-		afisareMasiniDinArbore(root->left);
-		afisareMasiniDinArbore(root->right);
+		afisarePreordine(root->left);
+		afisarePreordine(root->right);
 	}
 }
 
@@ -98,22 +98,22 @@ void afisareInordine(Nod* root) {
 	if (root) {
 		afisareInordine(root->left);
 		afisareMasina(root->info);
-		afisareMasiniDinArbore(root->right);
+		afisareInordine(root->right);
 	}
 }
 
 void afisarePostordine(Nod* root) {
 	if (root) {
+		afisarePostordine(root->left);
 		afisarePostordine(root->right);
 		afisareMasina(root->info);
-		afisareMasiniDinArbore(root->left);
 	}
 }
 
 void dezalocareArboreDeMasini(Nod** root) {
 	if (*root) {
-		dezalocareArboreDeMasini((*root)->left);
-		dezalocareArboreDeMasini((*root)->right);
+		dezalocareArboreDeMasini(&((*root)->left));
+		dezalocareArboreDeMasini(&((*root)->right));
 		free((*root)->info.model);
 		free((*root)-> info.numeSofer);
 		free(*root);
@@ -152,7 +152,7 @@ int determinaNumarNoduri(Nod* root) {
 
 int calculeazaInaltimeArbore(Nod* root) {
 	if (root) {
-		return 1 + max(calculeazaInaltimeArbore(root->left),calculeazaInaltimeArbore(root->right)); //ce drq
+		return 1 + max(calculeazaInaltimeArbore(root->left),calculeazaInaltimeArbore(root->right));
 	}
 	else {
 		return 0;
@@ -161,7 +161,7 @@ int calculeazaInaltimeArbore(Nod* root) {
 
 float calculeazaPretTotal(Nod* root) {
 	if (root) {
-		return root->info.pret + calculeazaPretTotal(root->left) + calculeazaPretTotal(root->right); // nu mere
+		return root->info.pret + calculeazaPretTotal(root->left) + calculeazaPretTotal(root->right);
 	}
 	else {
 		return 0;
@@ -170,13 +170,15 @@ float calculeazaPretTotal(Nod* root) {
 
 float calculeazaPretulMasinilorUnuiSofer(Nod* root, const char* numeSofer) {
 	if (root) {
+		float pretCurent = 0;
 		if (strcmp(root->info.numeSofer, numeSofer) == 0) {
-			return root->info.pret + calculeazaPretulMasinilorUnuiSofer(root->left,numeSofer) + calculeazaPretulMasinilorUnuiSofer(root->right, numeSofer);
+			pretCurent = root->info.pret;
 		}
-		else {
-			return 0;
-		}
+		return pretCurent
+			+ calculeazaPretulMasinilorUnuiSofer(root->left, numeSofer)
+			+ calculeazaPretulMasinilorUnuiSofer(root->right, numeSofer);
 	}
+	return 0;
 }
 
 int main() {
@@ -185,10 +187,10 @@ int main() {
 	afisareMasina(getMasinaByID(root,3));
 	int n = determinaNumarNoduri(root);
 	printf("Sunt %d noduri\n",n);
-	int m = calculeazaInaltimeArbore;
+	int m = calculeazaInaltimeArbore(root);
 	printf("Sunt %d etaje\n", m);
-	int p = calculeazaPretTotal;
-	printf("Pret total %d \n", m);
+	float p = calculeazaPretTotal(root);
+	printf("Pret total %.2f \n", p);
 	printf("Pretul masinilor lui Ionescu: %5.2f \n",calculeazaPretulMasinilorUnuiSofer(root,"Ionescu"));
 	return 0;
 }
