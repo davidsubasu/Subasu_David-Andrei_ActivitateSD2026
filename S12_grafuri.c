@@ -3,7 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-//heap,arbori,grafuri
+struct StructuraMasina {
+	int id;
+	int nrUsi;
+	float pret;
+	char* model;
+	char* numeSofer;
+	unsigned char serie;
+};
+typedef struct StructuraMasina Masina;
 
 typedef struct NodP NodP;
 typedef struct NodS NodS;
@@ -18,16 +26,6 @@ struct NodS {
 	struct NodS* next;
 	struct NodP* info;
 };
-
-struct StructuraMasina {
-	int id;
-	int nrUsi;
-	float pret;
-	char* model;
-	char* numeSofer;
-	unsigned char serie;
-};
-typedef struct StructuraMasina Masina;
 
 Masina citireMasinaDinFisier(FILE* file) {
 	char buffer[100];
@@ -161,8 +159,7 @@ void dezalocareNoduriGraf(void* listaPrincipala) {
 int main() {
 	NodP* graf;
 	graf = citireNoduriMasiniDinFisier("masini.txt");
-	citireMasinaDinFisier("muchii.txt",graf);
-	afisareListaVecini(graf,8);
-	
+	citireMuchiiDinFisier("muchii.txt", graf);
+	afisareListaVecini(graf,5);
 	return 0;
 }
