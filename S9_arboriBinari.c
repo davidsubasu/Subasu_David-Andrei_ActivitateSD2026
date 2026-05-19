@@ -72,7 +72,7 @@ void adaugaMasinaInArbore(Nod** root, Masina masinaNoua) {
 	}
 }
 
-void* citireArboreDeMasiniDinFisier(const char* numeFisier) {
+Nod* citireArboreDeMasiniDinFisier(const char* numeFisier) {
 	FILE* file = fopen(numeFisier, "r");
 	Nod* root = NULL;
 	if (file) {
@@ -171,7 +171,7 @@ float calculeazaPretTotal(Nod* root) {
 float calculeazaPretulMasinilorUnuiSofer(Nod* root, const char* numeSofer) {
 	if (root) {
 		float pretCurent = 0;
-		if (strcmp(root->info.numeSofer, numeSofer) == 0) {
+		if (strstr(root->info.numeSofer, numeSofer) != NULL) {
 			pretCurent = root->info.pret;
 		}
 		return pretCurent
