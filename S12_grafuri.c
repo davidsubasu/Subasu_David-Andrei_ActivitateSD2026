@@ -75,7 +75,14 @@ void inserareListaP(NodP** graf, Masina m) {
 	}
 }
 
-void inserareListaS(NodS** lista, NodP* vecin) {
+void inserareListaSecundara(NodS** cap, NodP* info) { // la inceputul listei
+	NodS *nou = (NodS*)malloc(sizeof(NodS));
+	nou->info = info;
+	nou->next = *cap;
+	*cap = nou;
+}
+
+/*void inserareListaS(NodS** lista, NodP* vecin) { //inserare la sfarsitul listei
 	NodS* nou = (NodS*)malloc(sizeof(NodS));
 	nou->info = vecin;
 	nou->next = NULL;
@@ -89,7 +96,7 @@ void inserareListaS(NodS** lista, NodP* vecin) {
 	else {
 		*lista = nou;
 	}
-}
+}*/
 
 NodP* cautaNodDupaID(NodP* listaPrincipala, int id) {
 	NodP* temp = listaPrincipala;
